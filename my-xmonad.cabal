@@ -1,0 +1,16 @@
+cabal-version: >= 1.10
+name: my-xmonad
+version: 0.1.0
+build-type: Simple
+
+executable xmonad
+  main-is: xmonad.hs
+  ghc-options: -Wall -fwarn-tabs -threaded -O2 -with-rtsopts=-N4
+  hs-source-dirs: .
+  build-depends:
+      X11
+    , base
+    , containers
+    , xmonad-contrib
+    , xmonad
+  default-language: Haskell2010
