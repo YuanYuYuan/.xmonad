@@ -6,6 +6,7 @@
 -- import XMonad.Layout.MouseResizableTile
 -- import XMonad.Util.WorkspaceCompare
 -- import qualified Data.Map        as M
+import XMonad.Hooks.WindowSwallowing
 import XMonad.Actions.TiledWindowDragging
 import XMonad.Actions.WindowMenu
 import XMonad.Actions.UpdatePointer
@@ -116,9 +117,11 @@ myKeys =
   -- }}}
 
   -- { Screen } {{{
-  [ ("M-S-d"      , nextScreen)
-  , ("M-S-a"      , prevScreen)
-  , ("M-i"        , swapNextScreen)
+  [ ("M-]"      , nextScreen)
+  , ("M-["      , prevScreen)
+  , ("M-S-]"    , swapNextScreen)
+  , ("M-S-["    , swapPrevScreen)
+  , ("M-`"    , swapPrevScreen)
   ] ++
   -- }}}
 
@@ -260,6 +263,7 @@ myKeys =
                 [ ("m", "mirror")
                 , ("n", "normal")
                 , ("a", "arandr")
+                , ("d", "dual")
                 ]
             ]
             where
@@ -370,8 +374,10 @@ ruleManageHook = composeAll
   , className =? "Gimp"           --> doFloat
   , title =? "Mozilla Firefox"    --> viewShift ( myWorkspaces !! 0 )
   , className =? "mpv"            --> viewShift ( myWorkspaces !! 2 )
+  , className =? "Sxiv"           --> viewShift ( myWorkspaces !! 2 )
   , title =? "Messenger"          --> viewShift ( myWorkspaces !! 3 )
   , title =? "LINE"               --> viewShift ( myWorkspaces !! 3 )
+  , className =? "Inkscape"       --> viewShift ( myWorkspaces !! 4 )
   , resource  =? "desktop_window" --> doIgnore
   , resource  =? "kdesktop"       --> doIgnore
   , isFullscreen                  --> doFullFloat
@@ -388,6 +394,7 @@ myManageHook = ruleManageHook
 myEventHook = refocusLastWhen myPred
     <+> fadeWindowsEventHook
     <+> fullscreenEventHook
+    -- <+> swallowEventHook (className =? "Alacritty") (return True)
     where
         myPred = refocusingIsActive <||> isFloat
 -- }}}
@@ -475,7 +482,7 @@ defaults = def
   ,   handleEventHook    = myEventHook
   ,   logHook            = myLogHook
   ,   startupHook        = myStartupHook
-  ,   focusFollowsMouse  = False
+  ,   focusFollowsMouse  = True
   -- ,   keys               = myKeys
   -- ,   mouseBindings      = myMouseBindings
   }
