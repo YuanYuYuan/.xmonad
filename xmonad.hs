@@ -6,6 +6,7 @@
 -- import XMonad.Layout.MouseResizableTile
 -- import XMonad.Util.WorkspaceCompare
 -- import qualified Data.Map        as M
+import XMonad.Hooks.WindowSwallowing
 import XMonad.Actions.TiledWindowDragging
 import XMonad.Actions.WindowMenu
 import XMonad.Actions.UpdatePointer
@@ -52,6 +53,7 @@ import XMonad.Layout.ResizableTile
 import XMonad.Layout.Spacing
 import XMonad.Layout.Tabbed
 import XMonad.Layout.WindowArranger
+import XMonad.Layout.Grid
 import XMonad.Util.EZConfig
 import XMonad.Util.NamedScratchpad
 import XMonad.Util.SpawnOnce (spawnOnce)
@@ -111,14 +113,17 @@ myKeys =
   , ("M1-<F2>"    , sendMessage $ JumpToLayout "vtile")
   , ("M1-<F3>"    , sendMessage $ JumpToLayout "htile")
   , ("M1-<F4>"    , sendMessage $ JumpToLayout "full")
+  , ("M1-<F5>"    , sendMessage $ JumpToLayout "grid")
   -- , ("M1-<F5>"    , sendMessage $ JumpToLayout "dualTab")
   ] ++
   -- }}}
 
   -- { Screen } {{{
-  [ ("M-S-d"      , nextScreen)
-  , ("M-S-a"      , prevScreen)
-  , ("M-i"        , swapNextScreen)
+  [ ("M-]"      , nextScreen)
+  , ("M-["      , prevScreen)
+  , ("M-S-]"    , swapNextScreen)
+  , ("M-S-["    , swapPrevScreen)
+  , ("M-`"    , swapPrevScreen)
   ] ++
   -- }}}
 
@@ -260,6 +265,7 @@ myKeys =
                 [ ("m", "mirror")
                 , ("n", "normal")
                 , ("a", "arandr")
+                , ("d", "dual")
                 ]
             ]
             where
@@ -330,6 +336,7 @@ myLayoutHook = commonLayoutSetting $ myTabbedLayout
                                  ||| myVTiledLayout
                                  ||| myHTiledLayout
                                  ||| myFullLayout
+                                 ||| myGridLayout
     -- ||| myDualTabLayout
 
     -- We need to place spacing after renamed switch the layouts normally
@@ -358,6 +365,8 @@ myLayoutHook = commonLayoutSetting $ myTabbedLayout
 
         myFullLayout = renamed [Replace "full"] Full
 
+        myGridLayout = renamed [Replace "grid"] $ GridRatio (3/2)
+
         -- myDualTabLayout =
         --   renamed [Replace "dualTab"]
         --   $ mySpacing
@@ -370,8 +379,10 @@ ruleManageHook = composeAll
   , className =? "Gimp"           --> doFloat
   , title =? "Mozilla Firefox"    --> viewShift ( myWorkspaces !! 0 )
   , className =? "mpv"            --> viewShift ( myWorkspaces !! 2 )
+  , className =? "Sxiv"           --> viewShift ( myWorkspaces !! 2 )
   , title =? "Messenger"          --> viewShift ( myWorkspaces !! 3 )
   , title =? "LINE"               --> viewShift ( myWorkspaces !! 3 )
+  , className =? "Inkscape"       --> viewShift ( myWorkspaces !! 4 )
   , resource  =? "desktop_window" --> doIgnore
   , resource  =? "kdesktop"       --> doIgnore
   , isFullscreen                  --> doFullFloat
@@ -388,6 +399,7 @@ myManageHook = ruleManageHook
 myEventHook = refocusLastWhen myPred
     <+> fadeWindowsEventHook
     <+> fullscreenEventHook
+    -- <+> swallowEventHook (className =? "Alacritty") (return True)
     where
         myPred = refocusingIsActive <||> isFloat
 -- }}}
@@ -397,6 +409,7 @@ myFadeHook = composeAll
     [ opaque -- default to opaque
     , isUnfocused --> opacity 0.9
     , (className =? "Alacritty") <&&> isUnfocused --> opacity 0.87
+    , (className =? "neovide") --> opacity 0.8
     -- , fmap ("Google" `isPrefixOf`) className --> opaque
     , isDialog --> opaque
     --, isUnfocused --> opacity 0.55
@@ -475,7 +488,7 @@ defaults = def
   ,   handleEventHook    = myEventHook
   ,   logHook            = myLogHook
   ,   startupHook        = myStartupHook
-  ,   focusFollowsMouse  = False
+  ,   focusFollowsMouse  = True
   -- ,   keys               = myKeys
   -- ,   mouseBindings      = myMouseBindings
   }
