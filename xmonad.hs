@@ -104,7 +104,7 @@ myKeys =
   , ("M-b"        , sendMessage ToggleStruts)
   , ("M-S-q"      , io exitSuccess)
   , ("M-S-r"      , spawn "xmonad --recompile; xmonad --restart")
-  , ("<Pause>"    , spawn "systemctl suspend")
+  -- , ("<Pause>"    , spawn "systemctl suspend")
   ] ++
   -- }}}
 
@@ -198,7 +198,7 @@ myKeys =
   -- { Clipboard } {{{
   [ ("M-c"  , clipboardCopy)
   , ("M-v"  , clipboardPaste)
-  , ("M-x"  , clipboardCut)
+  -- , ("M-x"  , clipboardCut)
   , ("M1-a" , ctrlA)
   , ("M1-c" , spawn "rofi -show clipboard -modi 'run,window,clipboard:greenclip print'")
   ]
@@ -267,12 +267,24 @@ myKeys =
                 , ("a", "arandr")
                 , ("d", "dual")
                 ]
+            ] ++
+
+            -- exit
+            [ ("M-x " ++ k, myExitCtrl a)
+                | (k, a) <-
+                [ ("s", "suspend")
+                , ("z", "lock")
+                , ("q", "logout")
+                , ("r", "reboot")
+                , ("d", "shutdown")
+                ]
             ]
             where
                 myScriptDir = "$HOME/Workings/scripts/"
                 myVolumeCtrl arg = spawn $ myScriptDir ++ "control-volume.sh " ++ arg
                 myBrightnessCtrl arg = spawn $ myScriptDir ++ "control-brightness.sh " ++ arg
                 myMonitorCtrl arg = spawn $ myScriptDir ++ "control-monitors.sh " ++ arg
+                myExitCtrl arg = spawn $ myScriptDir ++ "exit.sh " ++ arg
 
         keysForFloating =
             [ ("M-f"  , toggleCentreFloat)
@@ -442,7 +454,7 @@ myScratchPads :: [NamedScratchpad]
 myScratchPads =
   [ NS "terminal" spwanTerm (resource =? "TermScratchpad") fullSize
   , NS "ranger" spwanRanger (resource =? "RangerScratchpad") halfSize
-  , NS "neovide" "neovide" (className =? "neovide") fullSize
+  -- , NS "neovide" "neovide" (className =? "neovide") fullSize
   ] where
     spwanTerm = "alacritty --class=TermScratchpad"
     spwanRanger = "alacritty --class=RangerScratchpad -e ranger"
