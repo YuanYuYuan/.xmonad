@@ -387,9 +387,7 @@ myLayoutHook = commonLayoutSetting $ myTabbedLayout
 
 -- { Manage Hook } {{{
 ruleManageHook = composeAll
-  [ className =? "MPlayer"        --> doFloat
-  , className =? "Gimp"           --> doFloat
-  , title =? "Mozilla Firefox"    --> viewShift ( myWorkspaces !! 0 )
+  [ title =? "Mozilla Firefox"    --> viewShift ( myWorkspaces !! 0 )
   , className =? "mpv"            --> viewShift ( myWorkspaces !! 2 )
   , className =? "Sxiv"           --> viewShift ( myWorkspaces !! 2 )
   , title =? "Messenger"          --> viewShift ( myWorkspaces !! 3 )
@@ -403,8 +401,16 @@ ruleManageHook = composeAll
   where
     viewShift = doF . liftM2 (.) W.greedyView W.shift
 
+floatingManageHook = composeAll
+  [ className =? n --> doCenterFloat | n <- classNames ]
+  where classNames = [ "MPlayer"
+                     , "Gimp"
+                     , "Thunar"
+                     ]
+
 myManageHook = ruleManageHook
   <+> namedScratchpadManageHook myScratchPads
+  <+> floatingManageHook
 -- }}}
 
 -- { Event Hook } {{{
