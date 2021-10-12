@@ -95,7 +95,7 @@ myKeys =
   , ("`"          , namedScratchpadAction myScratchPads "terminal")
   , ("M-e"        , namedScratchpadAction myScratchPads "neovide")
   , ("M-r"        , namedScratchpadAction myScratchPads "ranger")
-  , ("M1-<Space>" , spawn "$HOME/.config/rofi/bin/launcher_misc")
+  , ("M1-<Space>" , spawn "$HOME/Workings/scripts/rofi-launcher.sh")
   , ("<Print>"    , spawn "$HOME/Workings/scripts/screenshot.sh")
   , ("M-q"        , kill)
   , ("M-<Space>"  , sendMessage NextLayout)
