@@ -20,14 +20,14 @@ stack install
 
 ## Usage
 
-Build
+Launch XMonad
 
 ```bash
-xmonad --compile
+exec xmonad
 ```
 
-Run
+Build and restart XMonad
 
 ```bash
-xmonad --restart
+xmonad --compile && xmonad --restart
 ```

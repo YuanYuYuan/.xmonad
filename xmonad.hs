@@ -6,29 +6,18 @@
 -- import XMonad.Layout.MouseResizableTile
 -- import XMonad.Util.WorkspaceCompare
 -- import qualified Data.Map        as M
-import XMonad.Hooks.WindowSwallowing
-import XMonad.Actions.TiledWindowDragging
 import XMonad.Actions.WindowMenu
 import XMonad.Actions.UpdatePointer
 import XMonad.Actions.EasyMotion (selectWindow)
-import qualified Data.Map.Strict             as Map
 import XMonad.Hooks.FadeWindows
-import qualified XMonad.Util.ExtensibleState as XS
-import XMonad.Actions.DynamicWorkspaces (addHiddenWorkspace)
 import XMonad.Layout.TrackFloating
 import XMonad.Hooks.DynamicLog
-import XMonad.Layout.Combo
-import XMonad.Layout.TwoPane
-import Control.Monad ( liftM2, unless, when )
-import Data.Maybe ( isJust )
-import Data.Ratio ( (%) )
+import Control.Monad ( liftM2 )
 import Graphics.X11.ExtraTypes
 import System.Exit
 import XMonad hiding ( (|||) )
 import XMonad.Actions.CycleWS
 import XMonad.Actions.DwmPromote
-import XMonad.Actions.FloatKeys
-import XMonad.Actions.UpdatePointer
 import XMonad.Hooks.UrgencyHook
 import XMonad.Actions.GroupNavigation
   ( historyHook
@@ -76,6 +65,8 @@ myTerminal = "alacritty"
 --
 -- > workspaces = ["web", "irc", "code" ] ++ map show [4..9]
 --
+
+myWorkspaces :: [[Char]]
 myWorkspaces = [ "\xf0ac"        -- 1: globe
                , "\xf121"        -- 2: code
                , "\xf04b"        -- 3: play
@@ -187,8 +178,8 @@ myKeys =
   -- { Workspace } {{{
 
   -- navigation
-  [ ("M-d"      , moveTo Next hiddenNonEmptyNonNSP)
-  , ("M-a"      , moveTo Prev hiddenNonEmptyNonNSP)
+  [ ("M-d"      , moveTo Next (hiddenWS :&: Not emptyWS :&: ignoringWSs [scratchpadWorkspaceTag]))
+  , ("M-a"      , moveTo Prev (hiddenWS :&: Not emptyWS :&: ignoringWSs [scratchpadWorkspaceTag]))
   -- , ("M-g"      , sendMessage ToggleGaps)
   , ("M-<Tab>"  , toggleWS' ["NSP"])
   ] ++
@@ -208,11 +199,11 @@ myKeys =
         -- getSortByIndexNoSP = fmap (.namedScratchpadFilterOutWorkspace) getSortByIndex
         -- nonNSP             = WSIs (return (\ws -> W.tag ws /= "nsp"))
         -- nonEmptyNonNSP     = WSIs $ return $ \ws -> isJust (W.stack ws) && W.tag ws /= "nsp"
-        hiddenNonEmptyNonNSP = WSIs $
-            do hiddenWS <- gets (map W.tag . W.hidden . windowset)
-               return $ \ws -> W.tag ws `elem` hiddenWS
-                            && isJust (W.stack ws)
-                            && W.tag ws /= "NSP"
+        -- hiddenNonEmptyNonNSP = WSIs $
+        --     do hiddenWS <- gets (map W.tag . W.hidden . windowset)
+        --        return $ \ws -> W.tag ws `elem` hiddenWS
+        --                     && isJust (W.stack ws)
+        --                     && W.tag ws /= "NSP"
 
         -- TODO simplify these codes
         clipboardCopy = withFocused $ \w -> do
@@ -227,11 +218,11 @@ myKeys =
                 then sendKey noModMask xF86XK_Paste
                 else sendKey controlMask xK_v
 
-        clipboardCut = withFocused $ \w -> do
-            b <- isTerminal w
-            if b
-                then sendKey noModMask xF86XK_Cut
-                else sendKey controlMask xK_x
+        -- clipboardCut = withFocused $ \w -> do
+        --     b <- isTerminal w
+        --     if b
+        --         then sendKey noModMask xF86XK_Cut
+        --         else sendKey controlMask xK_x
 
         ctrlA = withFocused $ \w -> do
             b <- isTerminal w
@@ -307,10 +298,6 @@ myKeys =
 myBorderWidth :: Dimension
 myBorderWidth = 0
 
--- Border colors for unfocused and focused windows, respectively.
--- myNormalBorderColor  = "#dddddd"
-myNormalBorderColor  = "#000000"
-myFocusedBorderColor = "#1E90FF"
 -- }}}
 
 -- { Spacing } {{{
@@ -326,6 +313,7 @@ mySpacing = spacingRaw
 -- { Hooks } {{{
 
 -- { Layout } {{{
+myTabConfig :: Theme
 myTabConfig = def
   { fontName            = "xft:Monospace-10"
   , activeColor         = "#46d9ff"
@@ -387,7 +375,7 @@ myLayoutHook = commonLayoutSetting $ myTabbedLayout
 
 -- { Manage Hook } {{{
 ruleManageHook = composeAll
-  [ title =? "Mozilla Firefox"    --> viewShift ( myWorkspaces !! 0 )
+  [ title =? "Mozilla Firefox"    --> viewShift ( head myWorkspaces )
   , className =? "mpv"            --> viewShift ( myWorkspaces !! 2 )
   , className =? "Sxiv"           --> viewShift ( myWorkspaces !! 2 )
   , title =? "Messenger"          --> viewShift ( myWorkspaces !! 3 )
@@ -416,7 +404,7 @@ myManageHook = ruleManageHook
 -- { Event Hook } {{{
 myEventHook = refocusLastWhen myPred
     <+> fadeWindowsEventHook
-    <+> fullscreenEventHook
+    -- <+> fullscreenEventHook
     -- <+> swallowEventHook (className =? "Alacritty") (return True)
     where
         myPred = refocusingIsActive <||> isFloat
@@ -499,8 +487,6 @@ defaults = def
   ,   borderWidth        = myBorderWidth
   ,   modMask            = mod4Mask
   ,   workspaces         = myWorkspaces
-  -- ,   normalBorderColor  = myNormalBorderColor
-  -- ,   focusedBorderColor = myFocusedBorderColor
   ,   layoutHook         = myLayoutHook
   ,   manageHook         = myManageHook
   ,   handleEventHook    = myEventHook
@@ -514,7 +500,7 @@ defaults = def
 main :: IO()
 main = xmonad
      $ withUrgencyHook NoUrgencyHook
-     $ ewmh
+     $ ewmhFullscreen . ewmh
      $ docks (additionalKeysP defaults myKeys)
 -- }}}
 
