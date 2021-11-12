@@ -99,6 +99,12 @@ myKeys =
   ] ++
   -- }}}
 
+  -- { Transparency } {{{
+  [ ("M-S-=", spawn "picom-trans -c +10")
+  , ("M-S--", spawn "picom-trans -c -10")
+  ] ++
+  -- }}}
+
   -- { Layout } {{{
   [ ("M1-<F1>"    , sendMessage $ JumpToLayout "tabbed")
   , ("M1-<F2>"    , sendMessage $ JumpToLayout "vtile")
@@ -415,7 +421,7 @@ myFadeHook = composeAll
     [ opaque -- default to opaque
     , isUnfocused --> opacity 0.9
     , (className =? "Alacritty") <&&> isUnfocused --> opacity 0.87
-    , (className =? "neovide") --> opacity 0.8
+    , (className =? "neovide") --> opacity 0.7
     -- , fmap ("Google" `isPrefixOf`) className --> opaque
     , isDialog --> opaque
     --, isUnfocused --> opacity 0.55
