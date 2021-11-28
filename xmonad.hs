@@ -448,7 +448,7 @@ mySetEnv = do
 myStartupHook :: X ()
 myStartupHook = do
   liftIO mySetEnv
-  spawnOnce "$XMONAD_HOME/polybar/spwan.sh"
+  spawnOnce "$HOME/.config/polybar/spwan.sh"
   setWMName "LG3D"
 -- }}}
 
