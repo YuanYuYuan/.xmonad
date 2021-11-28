@@ -86,7 +86,7 @@ myKeys =
   , ("`"          , namedScratchpadAction myScratchPads "terminal")
   , ("M-e"        , namedScratchpadAction myScratchPads "neovide")
   , ("M-r"        , namedScratchpadAction myScratchPads "ranger")
-  , ("M1-<Space>" , spawn "$HOME/Workings/scripts/rofi-launcher.sh")
+  , ("M1-<Space>" , spawn "$HOME/.config/rofi/launchpad.sh")
   , ("<Print>"    , spawn "$HOME/Workings/scripts/screenshot.sh")
   , ("M-q"        , kill)
   , ("M-<Space>"  , sendMessage NextLayout)
@@ -421,7 +421,7 @@ myFadeHook = composeAll
     [ opaque -- default to opaque
     , isUnfocused --> opacity 0.9
     , (className =? "Alacritty") <&&> isUnfocused --> opacity 0.87
-    , (className =? "neovide") --> opacity 0.7
+    , (className =? "neovide") --> opacity 0.8
     -- , fmap ("Google" `isPrefixOf`) className --> opaque
     , isDialog --> opaque
     --, isUnfocused --> opacity 0.55
