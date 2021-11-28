@@ -31,3 +31,14 @@ Build and restart XMonad
 ```bash
 xmonad --compile && xmonad --restart
 ```
+
+## Haskell Language Server
+
+We may need a HLS to make coding `xmonad.hs` more comfortable.
+Just install a collection of static HLS from AUR.
+
+```bash
+paru -S Haskell-language-server-static
+```
+
+
