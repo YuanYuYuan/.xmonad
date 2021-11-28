@@ -9,6 +9,7 @@ executable xmonad
   hs-source-dirs: .
   build-depends:
       X11
+    , filepath
     , base
     , containers
     , xmonad-contrib

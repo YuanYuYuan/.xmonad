@@ -50,10 +50,16 @@ import XMonad.Util.Paste (sendKey)
 import XMonad.Hooks.RefocusLast
 import qualified XMonad.StackSet as W
 import qualified Data.Map as M
+import System.FilePath
+import System.Environment
 -- }}}
 
 myTerminal :: [Char]
 myTerminal = "alacritty"
+
+myScriptDir :: FilePath
+myScriptDir = "$XMONAD_HOME/scripts"
+
 
 -- { Workspaces } {{{
 -- The default number of workspaces (virtual screens) and their names.
@@ -86,15 +92,15 @@ myKeys =
   , ("`"          , namedScratchpadAction myScratchPads "terminal")
   , ("M-e"        , namedScratchpadAction myScratchPads "neovide")
   , ("M-r"        , namedScratchpadAction myScratchPads "ranger")
-  , ("M1-<Space>" , spawn "$HOME/.config/rofi/launchpad.sh")
-  , ("<Print>"    , spawn "$HOME/Workings/scripts/screenshot.sh")
+  , ("M1-<Space>" , spawn $ myScriptDir </> "rofi/launchpad.sh")
+  , ("<Print>"    , spawn $ myScriptDir </> "screenshot.sh")
   , ("M-q"        , kill)
   , ("M-<Space>"  , sendMessage NextLayout)
   -- , ("M-<Space>"  , sendMessage NextLayout >> (dynamicLogString def >>= \d->spawn $ "xmessage "++d))
   , ("M-S-b"      , spawn "polybar-msg cmd toggle")
   , ("M-b"        , sendMessage ToggleStruts)
   , ("M-S-q"      , io exitSuccess)
-  , ("M-S-r"      , spawn "xmonad --recompile; xmonad --restart")
+  , ("M-S-r"      , spawn $ myScriptDir </> "rebuild.sh")
   -- , ("<Pause>"    , spawn "systemctl suspend")
   ] ++
   -- }}}
@@ -277,11 +283,10 @@ myKeys =
                 ]
             ]
             where
-                myScriptDir = "$HOME/Workings/scripts/"
-                myVolumeCtrl arg = spawn $ myScriptDir ++ "control-volume.sh " ++ arg
-                myBrightnessCtrl arg = spawn $ myScriptDir ++ "control-brightness.sh " ++ arg
-                myMonitorCtrl arg = spawn $ myScriptDir ++ "control-monitors.sh " ++ arg
-                myExitCtrl arg = spawn $ myScriptDir ++ "exit.sh " ++ arg
+                myVolumeCtrl arg = spawn $ myScriptDir </> "control-volume.sh " ++ arg
+                myBrightnessCtrl arg = spawn $ myScriptDir </> "control-brightness.sh " ++ arg
+                myMonitorCtrl arg = spawn $ myScriptDir </> "control-monitors.sh " ++ arg
+                myExitCtrl arg = spawn $ myScriptDir </> "exit.sh " ++ arg
 
         keysForFloating =
             [ ("M-f"  , toggleCentreFloat)
@@ -343,7 +348,6 @@ myLayoutHook = commonLayoutSetting $ myTabbedLayout
                                  ||| myHTiledLayout
                                  ||| myFullLayout
                                  ||| myGridLayout
-    -- ||| myDualTabLayout
 
     -- We need to place spacing after renamed switch the layouts normally
     where
@@ -436,14 +440,15 @@ myLogHook = refocusLastLogHook
 -- }}}
 
 -- { Startup Hook } {{{
--- Perform an arbitrary action each time xmonad starts or is restarted
--- with mod-q.  Used by, e.g., XMonad.Layout.PerWorkspace to initialize
--- per-workspace layout choices.
---
--- By default, do nothing.
+mySetEnv :: IO ()
+mySetEnv = do
+  userHome <- getEnv "HOME"
+  setEnv "XMONAD_HOME" $ userHome </> ".xmonad"
+
 myStartupHook :: X ()
 myStartupHook = do
-  spawnOnce "$HOME/.config/polybar/spwan.sh"
+  liftIO mySetEnv
+  spawnOnce "$XMONAD_HOME/polybar/spwan.sh"
   setWMName "LG3D"
 -- }}}
 
@@ -488,26 +493,26 @@ myScratchPads =
 -- }}}
 
 -- { Main } {{{
-defaults = def
-  { terminal             = myTerminal
-  ,   borderWidth        = myBorderWidth
-  ,   modMask            = mod4Mask
-  ,   workspaces         = myWorkspaces
-  ,   layoutHook         = myLayoutHook
-  ,   manageHook         = myManageHook
-  ,   handleEventHook    = myEventHook
-  ,   logHook            = myLogHook
-  ,   startupHook        = myStartupHook
-  ,   focusFollowsMouse  = True
-  -- ,   keys               = myKeys
-  -- ,   mouseBindings      = myMouseBindings
-  }
-
-main :: IO()
+main :: IO ()
 main = xmonad
-     $ withUrgencyHook NoUrgencyHook
-     $ ewmhFullscreen . ewmh
-     $ docks (additionalKeysP defaults myKeys)
+    $ withUrgencyHook NoUrgencyHook
+    $ ewmhFullscreen . ewmh
+    $ docks (additionalKeysP defaults myKeys)
+      where
+        defaults = def
+          { terminal             = myTerminal
+          ,   borderWidth        = myBorderWidth
+          ,   modMask            = mod4Mask
+          ,   workspaces         = myWorkspaces
+          ,   layoutHook         = myLayoutHook
+          ,   manageHook         = myManageHook
+          ,   handleEventHook    = myEventHook
+          ,   logHook            = myLogHook
+          ,   startupHook        = myStartupHook
+          ,   focusFollowsMouse  = True
+          -- ,   keys               = myKeys
+          -- ,   mouseBindings      = myMouseBindings
+          }
 -- }}}
 
 -- vim:foldmethod=marker
