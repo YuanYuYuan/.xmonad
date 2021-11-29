@@ -7,7 +7,8 @@ to build the source code.
 ## Install XMonad & XMonad-contrib
 
 ```bash
-submodule update --recursive
+git submodule init
+git submodule update --recursive
 stack install
 ```
 

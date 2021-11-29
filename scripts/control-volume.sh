@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+source $XMONAD_HOME/scripts/check_cmd.sh
+check_cmd amixer alsa-utils
+check_cmd dunstify dunst
+
 function get_volume {
     amixer get Master | grep '%' | head -n 1 | cut -d '[' -f 2 | cut -d '%' -f 1
 }

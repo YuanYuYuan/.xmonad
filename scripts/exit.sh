@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-wallpaper="$HOME/Pictures/dark-arch.png"
+source $XMONAD_HOME/scripts/check_cmd.sh
+check_cmd i3lock i3lock
+
+wallpaper="$XMONAD_HOME/pic/lockscreen.png"
 
 lock() {
     xset dpms force off
