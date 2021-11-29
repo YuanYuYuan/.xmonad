@@ -33,6 +33,12 @@ Build and restart XMonad
 xmonad --compile && xmonad --restart
 ```
 
+## Integrate wih Xserver
+
+```bash
+ln -s $(realpath .xinitrc) $Home/.xinitrc
+```
+
 ## Haskell Language Server
 
 We may need a HLS to make coding `xmonad.hs` more comfortable.
@@ -41,5 +47,4 @@ Just install a collection of static HLS from AUR.
 ```bash
 paru -S Haskell-language-server-static
 ```
-
 
