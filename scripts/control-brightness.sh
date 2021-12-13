@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+source $XMONAD_HOME/scripts/check_cmd.sh
+check_cmd xbacklight xorg-xbacklight
+
 function get_brightness {
     xbacklight -get | cut -d '.' -f 1
 }

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+source $XMONAD_HOME/scripts/check_cmd.sh
+check_cmd arandr arandr
+
 intern="eDP-1"
 extern="HDMI-1-0"
 

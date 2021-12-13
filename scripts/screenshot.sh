@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+source $XMONAD_HOME/scripts/check_cmd.sh
+check_cmd import imagemagick
+
 case $1 in
     "")
         import -trim /tmp/screenshot.png
