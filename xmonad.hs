@@ -50,6 +50,7 @@ import XMonad.Util.Paste (sendKey)
 import XMonad.Hooks.RefocusLast
 import qualified XMonad.StackSet as W
 import qualified Data.Map as M
+import qualified Data.Semigroup
 import System.FilePath
 import System.Environment
 -- }}}
@@ -356,7 +357,6 @@ myLayoutHook = commonLayoutSetting $ myTabbedLayout
           $ mkToggle (NOBORDERS ?? FULL ?? EOT)
           $ addTabs shrinkText myTabConfig
           $ subLayout [] (smartBorders Simplest)
-          -- $ Tall 1 (3/100) (1/2)
           $ ResizableTall
             1        -- number of master panes
             (3/100)  -- % of screen to increment by when resizing
@@ -384,21 +384,28 @@ myLayoutHook = commonLayoutSetting $ myTabbedLayout
 -- }}}
 
 -- { Manage Hook } {{{
+ruleManageHook :: Query (Data.Semigroup.Endo WindowSet)
 ruleManageHook = composeAll
-  [ title =? "Mozilla Firefox"    --> viewShift ( head myWorkspaces )
-  , className =? "mpv"            --> viewShift ( myWorkspaces !! 2 )
-  , className =? "Sxiv"           --> viewShift ( myWorkspaces !! 2 )
-  , title =? "Messenger"          --> viewShift ( myWorkspaces !! 3 )
-  , title =? "LINE"               --> viewShift ( myWorkspaces !! 3 )
-  , className =? "Inkscape"       --> viewShift ( myWorkspaces !! 4 )
-  , resource  =? "desktop_window" --> doIgnore
+  [ resource  =? "desktop_window" --> doIgnore
   , resource  =? "kdesktop"       --> doIgnore
   , isFullscreen                  --> doFullFloat
   , isDialog                      --> doCenterFloat
   ]
-  where
+
+workspaceManageHook :: Query (Data.Semigroup.Endo WindowSet)
+workspaceManageHook = composeAll
+  [ rule --> viewShift ( myWorkspaces !! idx ) | (idx, rule) <-
+    [ (1, title =? "Mozilla Firefox")
+    , (2, className =? "mpv")
+    , (2, className =? "Sxiv")
+    , (3, title =? "Messenger")
+    , (3, title =? "LINE")
+    , (3, className =? "Slack")
+    , (4, className =? "Inkscape")
+  ]] where
     viewShift = doF . liftM2 (.) W.greedyView W.shift
 
+floatingManageHook :: Query (Data.Semigroup.Endo WindowSet)
 floatingManageHook = composeAll
   [ className =? n --> doCenterFloat | n <- classNames ]
   where classNames = [ "MPlayer"
@@ -406,12 +413,15 @@ floatingManageHook = composeAll
                      , "Thunar"
                      ]
 
+myManageHook :: Query (Data.Semigroup.Endo WindowSet)
 myManageHook = ruleManageHook
   <+> namedScratchpadManageHook myScratchPads
   <+> floatingManageHook
+  <+> workspaceManageHook
 -- }}}
 
 -- { Event Hook } {{{
+myEventHook :: Event -> X Data.Semigroup.All
 myEventHook = refocusLastWhen myPred
     <+> fadeWindowsEventHook
     -- <+> fullscreenEventHook
@@ -421,6 +431,7 @@ myEventHook = refocusLastWhen myPred
 -- }}}
 
 -- { Log Hook } {{{
+myFadeHook :: FadeHook
 myFadeHook = composeAll
     [ opaque -- default to opaque
     , isUnfocused --> opacity 0.9
@@ -431,6 +442,7 @@ myFadeHook = composeAll
     --, isUnfocused --> opacity 0.55
     --, isFloating  --> opacity 0.75
     ]
+myLogHook :: X ()
 myLogHook = refocusLastLogHook
   <+> historyHook
   <+> nsHideOnFocusLoss myScratchPads
