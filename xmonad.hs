@@ -395,7 +395,7 @@ ruleManageHook = composeAll
 workspaceManageHook :: Query (Data.Semigroup.Endo WindowSet)
 workspaceManageHook = composeAll
   [ rule --> viewShift ( myWorkspaces !! idx ) | (idx, rule) <-
-    [ (1, title =? "Mozilla Firefox")
+    [ (0, className =? "firefox")
     , (2, className =? "mpv")
     , (2, className =? "Sxiv")
     , (3, title =? "Messenger")
@@ -436,7 +436,7 @@ myFadeHook = composeAll
     [ opaque -- default to opaque
     , isUnfocused --> opacity 0.9
     , (className =? "Alacritty") <&&> isUnfocused --> opacity 0.87
-    , (className =? "neovide") --> opacity 0.75
+    , (className =? "neovide") --> opacity 0.85
     -- , fmap ("Google" `isPrefixOf`) className --> opaque
     , isDialog --> opaque
     --, isUnfocused --> opacity 0.55
