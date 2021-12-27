@@ -3,7 +3,7 @@
 -- import Data.Monoid
 -- import XMonad.Layout.Fullscreen
 import XMonad.Layout.Gaps
-import Data.Ratio
+import Data.Ratio ((%))
 -- import XMonad.Layout.MouseResizableTile
 -- import XMonad.Util.WorkspaceCompare
 -- import qualified Data.Map        as M
