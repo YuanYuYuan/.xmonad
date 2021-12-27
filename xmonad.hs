@@ -2,13 +2,15 @@
 -- import Data.Char
 -- import Data.Monoid
 -- import XMonad.Layout.Fullscreen
--- import XMonad.Layout.Gaps
+import XMonad.Layout.Gaps
+import Data.Ratio
 -- import XMonad.Layout.MouseResizableTile
 -- import XMonad.Util.WorkspaceCompare
 -- import qualified Data.Map        as M
 import XMonad.Actions.WindowMenu
 import XMonad.Actions.UpdatePointer
 import XMonad.Actions.EasyMotion (selectWindow)
+import XMonad.Actions.FloatKeys
 import XMonad.Hooks.FadeWindows
 import XMonad.Layout.TrackFloating
 import XMonad.Hooks.DynamicLog
@@ -43,6 +45,7 @@ import XMonad.Layout.Spacing
 import XMonad.Layout.Tabbed
 import XMonad.Layout.WindowArranger
 import XMonad.Layout.Grid
+import XMonad.Layout.ResizableThreeColumns
 import XMonad.Util.EZConfig
 import XMonad.Util.NamedScratchpad
 import XMonad.Util.SpawnOnce (spawnOnce)
@@ -117,6 +120,7 @@ myKeys =
   , ("M1-<F3>"    , sendMessage $ JumpToLayout "htile")
   , ("M1-<F4>"    , sendMessage $ JumpToLayout "full")
   , ("M1-<F5>"    , sendMessage $ JumpToLayout "grid")
+  , ("M1-<F6>"    , sendMessage $ JumpToLayout "threeColumns")
   -- , ("M1-<F5>"    , sendMessage $ JumpToLayout "dualTab")
   ] ++
   -- }}}
@@ -161,16 +165,22 @@ myKeys =
   -- , ("C-M1-j"         , sendMessage $ Move D)
   -- , ("C-M1-k"         , sendMessage $ Move U)
   -- , ("C-M1-l"         , sendMessage $ Move R)
+  , ("M-<L>", withFocused $ keysMoveWindow (-10,   0))
+  , ("M-<R>", withFocused $ keysMoveWindow ( 10,   0))
+  , ("M-<D>", withFocused $ keysMoveWindow (  0,  10))
+  , ("M-<U>", withFocused $ keysMoveWindow (  0, -10))
 
   -- Resize
-  , ("M-h"           , sendMessage Shrink)
-  , ("M-l"           , sendMessage Expand)
-  , ("M-S-h"         , sendMessage MirrorExpand)
-  , ("M-S-l"         , sendMessage MirrorShrink)
-  , ("M-<L>"         , sendMessage Shrink)
-  , ("M-<R>"         , sendMessage Expand)
-  , ("M-<U>"         , sendMessage MirrorExpand)
-  , ("M-<D>"         , sendMessage MirrorShrink)
+  , ("M-h"     , sendMessage Shrink)
+  , ("M-l"     , sendMessage Expand)
+  , ("M-S-h"   , sendMessage MirrorExpand)
+  , ("M-S-l"   , sendMessage MirrorShrink)
+  , ("M-S-<U>" , withFocused $ keysResizeWindow (20, 20) (1%2, 1%2))
+  , ("M-S-<D>" , withFocused $ keysResizeWindow (-20, -20) (1%2, 1%2))
+  -- , ("M-<L>"         , sendMessage Shrink)
+  -- , ("M-<R>"         , sendMessage Expand)
+  -- , ("M-<U>"         , sendMessage MirrorExpand)
+  -- , ("M-<D>"         , sendMessage MirrorShrink)
 
   -- , ("M-S-f"         , sendMessage $ Toggle FULL)
   , ("M-t"           , withFocused $ windows . W.sink)
@@ -192,7 +202,7 @@ myKeys =
   -- navigation
   [ ("M-d"      , moveTo Next (hiddenWS :&: Not emptyWS :&: ignoringWSs [scratchpadWorkspaceTag]))
   , ("M-a"      , moveTo Prev (hiddenWS :&: Not emptyWS :&: ignoringWSs [scratchpadWorkspaceTag]))
-  -- , ("M-g"      , sendMessage ToggleGaps)
+  , ("M-g"      , toggleWindowSpacingEnabled)
   , ("M-<Tab>"  , toggleWS' ["NSP"])
   ] ++
 
@@ -290,7 +300,7 @@ myKeys =
 
         keysForFloating =
             [ ("M-f"  , toggleCentreFloat)
-            , ("M-g"  , toggleMiniFloat)
+            , ("M-M1-f"  , toggleMiniFloat)
             , ("M-S-f", withFocused $ windows . flip W.float (W.RationalRect 0 0 1 1))
             ] where
                 floatOrNot f n = withFocused $ \windowId -> do
@@ -348,6 +358,7 @@ myLayoutHook = commonLayoutSetting $ myTabbedLayout
                                  ||| myHTiledLayout
                                  ||| myFullLayout
                                  ||| myGridLayout
+                                 ||| myThreeColumnLayout
 
     -- We need to place spacing after renamed switch the layouts normally
     where
@@ -374,6 +385,10 @@ myLayoutHook = commonLayoutSetting $ myTabbedLayout
           $ tabbedBottom shrinkText myTabConfig
 
         myFullLayout = renamed [Replace "full"] Full
+
+        myThreeColumnLayout =
+          renamed [Replace "threeColumns"]
+          $ ResizableThreeColMid 1 (3/100) (1/2) []
 
         myGridLayout = renamed [Replace "grid"] $ GridRatio (3/2)
 
