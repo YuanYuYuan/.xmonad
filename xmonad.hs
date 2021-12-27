@@ -310,7 +310,8 @@ myKeys =
                     then f
                     else n
 
-                centreFloat w = windows $ W.float w (W.RationalRect 0.25 0.25 0.5 0.5)
+                -- centreFloat w = windows $ W.float w (W.RationalRect 0.25 0.25 0.5 0.5)
+                centreFloat w = windows $ W.float w (W.RationalRect (1/6) (1/6) (2/3) (2/3))
                 miniFloat w = windows $ W.float w (W.RationalRect 0.58 0.55 0.4 0.4)
                 toggleCentreFloat = floatOrNot (withFocused $ windows . W.sink) (withFocused centreFloat)
                 toggleMiniFloat = floatOrNot (withFocused $ windows . W.sink) (withFocused miniFloat)
