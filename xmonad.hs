@@ -14,6 +14,7 @@ import XMonad.Actions.FloatKeys
 import XMonad.Hooks.FadeWindows
 import XMonad.Layout.TrackFloating
 import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.InsertPosition
 import Control.Monad ( liftM2 )
 import Graphics.X11.ExtraTypes
 import System.Exit
@@ -430,7 +431,8 @@ floatingManageHook = composeAll
                      ]
 
 myManageHook :: Query (Data.Semigroup.Endo WindowSet)
-myManageHook = ruleManageHook
+myManageHook = insertPosition Below Newer
+  <+> ruleManageHook
   <+> namedScratchpadManageHook myScratchPads
   <+> floatingManageHook
   <+> workspaceManageHook
