@@ -65,7 +65,6 @@ myTerminal = "alacritty"
 myScriptDir :: FilePath
 myScriptDir = "$XMONAD_HOME/scripts"
 
-
 -- { Workspaces } {{{
 -- The default number of workspaces (virtual screens) and their names.
 -- By default we use numeric strings, but any string may be used as a
@@ -87,7 +86,6 @@ myWorkspaces = [ "\xf0ac"        -- 1: globe
                ]
 -- }}}
 
-
 -- { Keybindings } {{{
 myKeys :: [([Char], X ())]
 myKeys =
@@ -95,6 +93,7 @@ myKeys =
   -- [ ("M-<Return>" , spawn "alacritty --working-directory $(xcwd)")
   [ ("M-<Return>" , spawn "alacritty")
   , ("`"          , namedScratchpadAction myScratchPads "terminal")
+  , ("C-`"        , sendKey 0 xK_grave)
   , ("M-e"        , namedScratchpadAction myScratchPads "neovide")
   , ("M-r"        , namedScratchpadAction myScratchPads "ranger")
   , ("M1-<Space>" , spawn $ myScriptDir </> "rofi/launchpad.sh")
@@ -431,7 +430,8 @@ floatingManageHook = composeAll
                      ]
 
 myManageHook :: Query (Data.Semigroup.Endo WindowSet)
-myManageHook = insertPosition Below Newer
+-- myManageHook = insertPosition Above Newer
+myManageHook = ruleManageHook
   <+> ruleManageHook
   <+> namedScratchpadManageHook myScratchPads
   <+> floatingManageHook
@@ -489,7 +489,7 @@ myScratchPads :: [NamedScratchpad]
 myScratchPads =
   [ NS "terminal" spwanTerm (resource =? "TermScratchpad") fullSize
   , NS "ranger" spwanRanger (resource =? "RangerScratchpad") halfSize
-  -- , NS "neovide" "neovide" (className =? "neovide") fullSize
+  , NS "neovide" "neovide" (className =? "neovide") halfSize
   ] where
     spwanTerm = "alacritty --class=TermScratchpad"
     spwanRanger = "alacritty --class=RangerScratchpad -e ranger"
