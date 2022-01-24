@@ -65,6 +65,15 @@ myTerminal = "alacritty"
 myScriptDir :: FilePath
 myScriptDir = "$XMONAD_HOME/scripts"
 
+myCentreFloatRR :: W.RationalRect
+myCentreFloatRR = W.RationalRect (1/6) (1/6) (2/3) (2/3)
+
+myFullSizeRR :: W.RationalRect
+myFullSizeRR = W.RationalRect 0 0 1 1
+
+myMiniFloatRR :: W.RationalRect
+myMiniFloatRR = W.RationalRect 0.58 0.55 0.4 0.4
+
 -- { Workspaces } {{{
 -- The default number of workspaces (virtual screens) and their names.
 -- By default we use numeric strings, but any string may be used as a
@@ -92,10 +101,10 @@ myKeys =
   -- { Basics } {{{
   -- [ ("M-<Return>" , spawn "alacritty --working-directory $(xcwd)")
   [ ("M-<Return>" , spawn "alacritty")
-  , ("`"          , namedScratchpadAction myScratchPads "terminal")
+  , ("`"          , namedScratchpadAction myScratchPads "TermInScratchpad")
   , ("C-`"        , sendKey 0 xK_grave)
-  , ("M-e"        , namedScratchpadAction myScratchPads "neovide")
-  , ("M-r"        , namedScratchpadAction myScratchPads "ranger")
+  , ("M-e"        , namedScratchpadAction myScratchPads "NeovideInScratchpad")
+  , ("M-r"        , namedScratchpadAction myScratchPads "RangerInScratchpad")
   , ("M1-<Space>" , spawn $ myScriptDir </> "rofi/launchpad.sh")
   , ("<Print>"    , spawn $ myScriptDir </> "screenshot.sh")
   , ("M-q"        , kill)
@@ -302,7 +311,7 @@ myKeys =
         keysForFloating =
             [ ("M-f"  , toggleCentreFloat)
             , ("M-M1-f"  , toggleMiniFloat)
-            , ("M-S-f", withFocused $ windows . flip W.float (W.RationalRect 0 0 1 1))
+            , ("M-S-f", withFocused $ windows . flip W.float myFullSizeRR)
             ] where
                 floatOrNot f n = withFocused $ \windowId -> do
                     floats <- gets (W.floating . windowset)
@@ -311,8 +320,8 @@ myKeys =
                     else n
 
                 -- centreFloat w = windows $ W.float w (W.RationalRect 0.25 0.25 0.5 0.5)
-                centreFloat w = windows $ W.float w (W.RationalRect (1/6) (1/6) (2/3) (2/3))
-                miniFloat w = windows $ W.float w (W.RationalRect 0.58 0.55 0.4 0.4)
+                centreFloat w = windows $ W.float w myCentreFloatRR
+                miniFloat w = windows $ W.float w myMiniFloatRR
                 toggleCentreFloat = floatOrNot (withFocused $ windows . W.sink) (withFocused centreFloat)
                 toggleMiniFloat = floatOrNot (withFocused $ windows . W.sink) (withFocused miniFloat)
 -- }}}
@@ -455,6 +464,7 @@ myFadeHook = composeAll
     , isUnfocused --> opacity 0.9
     , (className =? "Alacritty") <&&> isUnfocused --> opacity 0.87
     , (className =? "neovide") --> opacity 0.85
+    , (className =? "NeovideInScratchpad") --> opacity 0.85
     -- , fmap ("Google" `isPrefixOf`) className --> opaque
     , isDialog --> opaque
     --, isUnfocused --> opacity 0.55
@@ -487,14 +497,28 @@ myStartupHook = do
 -- { Scratch Pad } {{{
 myScratchPads :: [NamedScratchpad]
 myScratchPads =
-  [ NS "terminal" spwanTerm (resource =? "TermScratchpad") fullSize
-  , NS "ranger" spwanRanger (resource =? "RangerScratchpad") halfSize
-  , NS "neovide" "neovide" (className =? "neovide") halfSize
+  [ NS "TermInScratchpad" spawnTerm (resource =? "TermInScratchpad") fullSize
+  , NS "RangerInScratchpad" spawnRanger (resource =? "RangerInScratchpad") halfSize
+  , NS "NeovideInScratchpad" spawnNeovide (className =? "NeovideInScratchpad") halfSize
   ] where
-    spwanTerm = "alacritty --class=TermScratchpad"
-    spwanRanger = "alacritty --class=RangerScratchpad -e ranger"
-    halfSize = customFloating $ W.RationalRect 0.2 0.2 0.6 0.6
-    fullSize = customFloating $ W.RationalRect 0.0 0.0 1.0 1.0
+    spawnTerm = "alacritty --class=TermInScratchpad"
+    spawnRanger = "alacritty --class=RangerInScratchpad -e ranger"
+    spawnNeovide = "neovide --x11-wm-class=NeovideInScratchpad"
+    halfSize = customFloating myCentreFloatRR
+    fullSize = customFloating myFullSizeRR
+
+-- myScratchPads =
+--   [ NS keyword command condition  size
+--     | (command, keyword, size) <-
+--     [ ("alacritty --class=TermInScratchpad", "TermInScratchpad", (resource =? keyword), fullSize)
+--     , ("alacritty --class=RangerInScratchpad -e ranger", "RangerInScratchpad", halfSize)
+--     , ("neovide --x11-wm-class=NeovideInScratchpad", "NeovideInScratchpad", halfSize)
+--     ]
+--   ]
+--   where
+--     halfSize = customFloating myCentreFloatRR
+--     fullSize = customFloating myFullSizeRR
+
 
 -- -- Ref: https://www.reddit.com/r/xmonad/comments/o3i7st/hiding_scratchpads_when_loosing_focus/
 -- hideOnFocusChange :: NamedScratchpads -> X ()

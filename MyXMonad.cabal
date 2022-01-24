@@ -1,10 +1,10 @@
 cabal-version: >= 1.10
-name: my-xmonad
+name: MyXMonad
 version: 0.1.0
 build-type: Simple
 
 executable xmonad
-  main-is: xmonad.hs
+  main-is: Main.hs
   ghc-options: -Wall -fwarn-tabs -threaded -O2 -with-rtsopts=-N4
   hs-source-dirs: .
   build-depends:
