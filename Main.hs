@@ -72,7 +72,7 @@ myFullSizeRR :: W.RationalRect
 myFullSizeRR = W.RationalRect 0 0 1 1
 
 myMiniFloatRR :: W.RationalRect
-myMiniFloatRR = W.RationalRect 0.58 0.55 0.4 0.4
+myMiniFloatRR = W.RationalRect 0.64 0.63 0.35 0.35
 
 -- { Workspaces } {{{
 -- The default number of workspaces (virtual screens) and their names.
