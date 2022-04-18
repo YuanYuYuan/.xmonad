@@ -16,11 +16,11 @@ case "$1" in
         xrandr --output $intern --auto --output $extern --off
         notify-send "Monitors Mode" "$intern only"
         ;;
-    # hdmi)
-    #     # single HDMI
-    #     xrandr --output $intern --auto --output $extern --auto --primary
-    #     notify-send "Monitors Mode" "$extern only"
-    #     ;;
+    hdmi)
+        # single HDMI
+        xrandr --output $intern --off --output $extern --auto --primary
+        notify-send "Monitors Mode" "$extern only"
+        ;;
     dual)
         # dual display
         xrandr --output $intern --auto --output $extern --auto --primary --right-of $intern
