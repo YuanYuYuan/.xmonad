@@ -288,6 +288,7 @@ myKeys =
                 [ ("m", "mirror")
                 , ("n", "normal")
                 , ("a", "arandr")
+                , ("h", "hdmi")
                 , ("d", "dual")
                 ]
             ] ++
