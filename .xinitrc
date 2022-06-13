@@ -5,10 +5,18 @@ export XMODIFIERS=@im=fcitx
 fcitx5 &
 
 dunst &
+udiskie &
 greenclip daemon &
 picom -b
-xset r rate 300 50
-udiskie &
+redshift &
+nm-applet &
+
+xset r rate 250 50
 xrandr --output HDMI-0 --primary --mode 1920x1080
+xmodmap $HOME/.Xmodmap
+
+# set xcursor
+xsetroot -cursor_name left_ptr
+
 feh --bg-scale $HOME/.xmonad/pic/wallpaper.jpg
 exec xmonad
