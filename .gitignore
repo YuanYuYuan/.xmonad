@@ -4,3 +4,4 @@
 *.o
 *.lock
 xmonad-x86_64-linux
+_*
