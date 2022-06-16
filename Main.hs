@@ -165,10 +165,12 @@ myKeys =
   -- , ("M1-<Tab>"      , toggleFocus)
 
   -- Swap
-  , ("M-S-j"         , windows W.swapDown)
-  , ("M-S-k"         , windows W.swapUp)
-  , ("M-m"           , dwmpromote)
-  , ("M-S-m"         , windows W.swapMaster)
+  , ("M-S-j"           , windows W.swapDown)
+  , ("M-S-k"           , windows W.swapUp)
+  , ("M-S-<Page_Down>" , windows W.swapDown)
+  , ("M-S-<Page_Up>"   , windows W.swapUp)
+  , ("M-m"             , dwmpromote)
+  , ("M-S-m"           , windows W.swapMaster)
 
   -- -- Move
   -- , ("C-M1-h"         , sendMessage $ Move L)
