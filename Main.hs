@@ -466,7 +466,7 @@ myFadeHook = composeAll
     [ opaque -- default to opaque
     , isUnfocused --> opacity 0.9
     , (className =? "Alacritty") <&&> isUnfocused --> opacity 0.87
-    , (className =? "NeovideInScratchpad") --> opacity 0.85
+    -- , (className =? "NeovideInScratchpad") --> opacity 0.85
     -- , fmap ("Google" `isPrefixOf`) className --> opaque
     , isDialog --> opaque
     --, isUnfocused --> opacity 0.55
