@@ -19,4 +19,10 @@ xmodmap $HOME/.Xmodmap
 xsetroot -cursor_name left_ptr
 
 feh --bg-scale $HOME/.xmonad/pic/wallpaper.jpg
+
+# flash window while chaning focus
+flashfocus &
+
+# hide mouse
+unclutter -idle 10 &
 exec xmonad
