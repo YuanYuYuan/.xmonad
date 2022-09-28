@@ -276,6 +276,14 @@ myKeys =
                 ]
             ] ++
 
+            [ (k, myVolumeCtrl a)
+                | (k, a) <-
+                [ ("<XF86AudioRaiseVolume>", "up")
+                , ("<XF86AudioLowerVolume>", "down")
+                , ("<XF86AudioMute>", "mute")
+                ]
+            ] ++
+
             -- brightness
             [ ("M-" ++ k, myBrightnessCtrl a)
                 | (k, a) <-
