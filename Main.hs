@@ -428,6 +428,7 @@ workspaceManageHook = composeAll
     , (2, className =? "Sxiv")
     , (3, title =? "Messenger")
     , (3, title =? "LINE")
+    , (3, className =? "discord")
     , (3, className =? "Slack")
     , (4, className =? "Inkscape")
   ]] where
