@@ -4,6 +4,7 @@
 -- import XMonad.Layout.Fullscreen
 import XMonad.Layout.Gaps
 import Data.Ratio ((%))
+import Data.List
 -- import XMonad.Layout.MouseResizableTile
 -- import XMonad.Util.WorkspaceCompare
 -- import qualified Data.Map        as M
@@ -264,7 +265,7 @@ myKeys =
                 then sendKey noModMask xK_Home
                 else sendKey mod1Mask xK_a
 
-        isTerminal = fmap (== "Alacritty") . runQuery className
+        isTerminal = fmap ((== "Alacritty") <||> (isSuffixOf "Scratchpad")) . runQuery className
 
         keysForControl =
             -- volume control

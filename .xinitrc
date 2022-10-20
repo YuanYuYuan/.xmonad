@@ -25,4 +25,8 @@ flashfocus &
 
 # hide mouse
 unclutter -idle 10 &
+
+# bluetooth
+blueman-applet &
+
 exec xmonad
