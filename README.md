@@ -47,4 +47,3 @@ Just install a collection of static HLS from AUR.
 ```bash
 paru -S Haskell-language-server-static
 ```
-
