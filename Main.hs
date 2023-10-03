@@ -13,9 +13,8 @@ import XMonad.Actions.UpdatePointer
 import XMonad.Actions.EasyMotion (selectWindow)
 import XMonad.Actions.FloatKeys
 import XMonad.Hooks.FadeWindows
-import XMonad.Layout.TrackFloating
+import XMonad.Layout.FocusTracking
 import XMonad.Hooks.DynamicLog
-import XMonad.Hooks.InsertPosition
 import Control.Monad ( liftM2 )
 import Graphics.X11.ExtraTypes
 import System.Exit
@@ -265,7 +264,7 @@ myKeys =
                 then sendKey noModMask xK_Home
                 else sendKey mod1Mask xK_a
 
-        isTerminal = fmap ((== "Alacritty") <||> (isSuffixOf "Scratchpad")) . runQuery className
+        isTerminal = fmap ((== "Alacritty") <||> isSuffixOf "Scratchpad") . runQuery className
 
         keysForControl =
             -- volume control
@@ -368,12 +367,6 @@ myTabConfig = def
   , inactiveTextColor   = "#d0d0d0"
   }
 
-commonLayoutSetting = windowNavigation
-  . windowArrange
-  . mouseResize
-  . trackFloating
-  . mySpacing
-  . avoidStruts
 
 -- apply commonLayoutSetting beforehand to resolve the conflict between tall & tabbed layouts
 myLayoutHook = commonLayoutSetting $ myTabbedLayout
@@ -385,6 +378,12 @@ myLayoutHook = commonLayoutSetting $ myTabbedLayout
 
     -- We need to place spacing after renamed switch the layouts normally
     where
+        commonLayoutSetting = windowNavigation
+          . windowArrange
+          . mouseResize
+          . focusTracking
+          . mySpacing
+          . avoidStruts
         myVTiledLayout =
           renamed [Replace "vtile"]
           $ mkToggle (NOBORDERS ?? FULL ?? EOT)
