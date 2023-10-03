@@ -42,15 +42,15 @@ function send_notification {
 
 case $1 in
     up)
-        amixer set Master on > /dev/null
-        amixer set Master 5%+ > /dev/null
+        pactl set-sink-mute @DEFAULT_SINK@ false
+        pactl set-sink-volume @DEFAULT_SINK@ +5%
         ;;
     down)
-        amixer set Master on > /dev/null
-        amixer set Master 5%- > /dev/null
+        pactl set-sink-mute @DEFAULT_SINK@ false
+        pactl set-sink-volume @DEFAULT_SINK@ -5%
         ;;
     mute)
-        amixer set Master 1+ toggle > /dev/null
+        pactl set-sink-mute @DEFAULT_SINK@ toggle
         ;;
 esac
 
